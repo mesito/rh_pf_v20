@@ -31,7 +31,7 @@ figures are distributed separately as `Ismail_rh_pf_v20_latex.zip`
 
 | Path | Covers | Scripts |
 |---|---|---|
-| `parts_I_VI/` | Sections 4–32 | 24 |
+| `parts_I_VI/` | Sections 4–32 | 25 (+ `config.py`, `ic_core.py`) |
 | `part_VII/` | Sections 33–40 | 6 |
 | `part_VIII/` | Sections 41–47 | 3 |
 | `part_IX/` | Sections 48–57 | 10 |
@@ -40,8 +40,16 @@ figures are distributed separately as `Ismail_rh_pf_v20_latex.zip`
 
 Each of `parts_I_VI/`, `part_VII/` and `part_VIII/` is self-contained: the
 required zero caches (`zeta_zeros.npy`, `zeros_cache.pkl`, `dh_online_true.pkl`,
-`_cache_*.npy`) ship with them. Only `part_IX/` reads `data/`, through the
-environment variable `RH_DATA` (default `./data`).
+`_cache_*.npy`) ship with them. `part_IX/` and `parts_I_VI/speiser_threshold_verify.py`
+read `data/` through the environment variable `RH_DATA` (default: the sibling
+`data/` directory, i.e. `../data` relative to the script); the latter uses
+`data/zeros_window_7005_592.npy` (zeros 6414–7005 near t ≈ 7005) and rebuilds it
+from `data/zeros6.gz` if absent.
+
+`SHA256SUMS.txt` records the **shipped state**. The pipeline scripts of
+`part_IX/` write derived arrays back into `data/`, so after any pipeline run the
+affected checksums no longer match; regenerate from the repository root with
+`find . -type f ! -name 'SHA256SUMS.txt' ! -name '*.pyc' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt`.
 
 ## 3. Sections 4–32 — `parts_I_VI/`
 

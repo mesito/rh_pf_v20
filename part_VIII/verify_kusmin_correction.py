@@ -10,7 +10,10 @@ Reproduces, with PASS/FAIL checks:
      (0.111, 0.275, 2.450) exactly.
   2. The Kusmin--Landau correction: Cheng--Graham k1=2.38 (erroneous input) replaced by
      Hiary--Patel--Yang k1=0.618 [J. Number Theory 256 (2024), 195-217]:
-     c = 2.44953 - 0.15046 = 2.29907; with the published safety margin +0.0605: c <= 2.332.
+     c = 2.44953 - 0.15046 - 0.02856 = 2.270511, the last term carrying the validated
+     boundary constant B1 = 1/2 + 1.93/log 1000 = 0.779396 of Lemma 44.1; with the
+     published safety margin +0.0605 this gives c <= 2.331011 < 2.332. (Without the
+     B1 term the chain would give 2.359567 > 2.332, so the term is decisive.)
   3. The corrected pipeline: Sbar(T0)=6.483, x1*(T0)=3.0545, tau*(T0)=0.2258,
     print("  dividend table (branch (i) clock; branch (ii) is in verify_14_15_flow_bounds.py):")
 
@@ -21,7 +24,11 @@ import numpy as np
 import mpmath as mp
 
 mp.mp.dps = 25
-PASS = lambda ok: "PASS" if ok else "FAIL"
+_FAILURES = []
+def PASS(ok, label=""):
+    if not ok:
+        _FAILURES.append(label or "unlabelled check")
+    return "PASS" if ok else "FAIL"
 
 def part1_trudgian_61():
     eta, r = mp.mpf('0.06'), mp.mpf('2.08')
@@ -55,9 +62,22 @@ def part1_trudgian_61():
     print(f"  Delta = 0.111589*(ln 0.618 - ln 2.38) = {float(cH-cCG):+.5f} (-0.15046) "
           f"{PASS(abs((cH-cCG)+0.15046)<2e-5)}")
     print(f"  c(HPY) = {float(cH):.5f} (2.29907) {PASS(abs(cH-2.29907)<2e-5)}")
-    c_final = cH + mp.mpf('0.0605')
-    print(f"  + published safety margin 0.0605 -> {float(c_final):.4f} <= 2.332 "
-          f"{PASS(c_final <= 2.332)}")
+    print("== Part 2b: validated boundary constant B1 (Lemma 44.1) ==")
+    B1 = mp.mpf('0.5') + mp.mpf('1.93')/mp.log(1000)
+    W  = mp.mpf('0.527264')                    # W(0.06, 2.08)
+    dB = W*mp.log(B1)/(2*pi*logr)              # the B1 term of the full chain
+    print(f"  B1 = 1/2 + 1.93/log 1000 = {float(B1):.6f} (0.779396) "
+          f"{PASS(abs(B1-mp.mpf('0.779396'))<1e-6, 'B1 value')}")
+    print(f"  B1-term = W log B1/(2 pi log r) = {float(dB):+.6f} (-0.028558) "
+          f"{PASS(abs(dB+mp.mpf('0.028558'))<2e-5, 'B1 term')}")
+    cFull = cH + dB
+    print(f"  c(full chain) = {float(cFull):.6f} (2.270511) "
+          f"{PASS(abs(cFull-mp.mpf('2.270511'))<2e-5, 'c full chain')}")
+    c_final = cFull + mp.mpf('0.0605')
+    print(f"  + published safety margin 0.0605 -> {float(c_final):.6f} <= 2.332 "
+          f"{PASS(c_final <= mp.mpf('2.332'), 'c + margin <= 2.332')}")
+    print(f"  (without the B1 term the sketch chain would give "
+          f"{float(cH+mp.mpf('0.0605')):.4f} > 2.332 -- the term is decisive)")
     print("  => |S(T)| <= 0.112 log T + 0.278 loglog T + 2.332  for T >= e")
     return 2.332
 
@@ -99,3 +119,8 @@ def part3_pipeline(c_const):
 if __name__ == "__main__":
     c = part1_trudgian_61()
     part3_pipeline(c)
+    import sys
+    if _FAILURES:
+        print("\nFAILED CHECKS (%d): %s" % (len(_FAILURES), "; ".join(_FAILURES)))
+        sys.exit(1)
+    print("\nALL CHECKS PASS")

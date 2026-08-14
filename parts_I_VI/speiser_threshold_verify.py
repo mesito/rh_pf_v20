@@ -24,7 +24,9 @@ h0 > h_thr  (this is the IVT upgrade of Thm 10.1(iii)).
 
 xi'/xi(s) = 1/s + 1/(s-1) - (log pi)/2 + (1/2) psi(s/2) + zeta'(s)/zeta(s).
 
-Data: /tmp/pv/_cache_zr_7005_250.npy (592 zeta zeros near T ~ 7005).
+Data: data/zeros_window_7005_592.npy (592 zeta zeros near T ~ 7005, indices
+      6414-7005 of the shipped Odlyzko table data/zeros6.gz; rebuilt automatically
+      if absent). Override the data root with RH_DATA.
 Run:  python3 speiser_threshold_verify.py     (uses 2 worker processes)
 """
 
@@ -37,12 +39,17 @@ from concurrent.futures import ProcessPoolExecutor
 
 mp.mp.dps = 30  # 25+ digits everywhere
 
-CACHE = "/tmp/pv/_cache_zr_7005_250.npy"
+_HERE = os.path.dirname(os.path.abspath(__file__))
+DATA = os.environ.get("RH_DATA", os.path.join(_HERE, "..", "data"))
+CACHE = os.path.join(DATA, "zeros_window_7005_592.npy")
 if not os.path.exists(CACHE):
-    # fall back: look next to this script / in /tmp
-    for cand in ("/mnt/agents/output/_cache_zr_7005_250.npy",):
-        if os.path.exists(cand):
-            CACHE = cand
+    # rebuild the window from the shipped Odlyzko table (zeros 6414-7005)
+    import gzip
+    src = os.path.join(DATA, "zeros6.gz")
+    if not os.path.exists(src):
+        raise SystemExit("neither %s nor %s found; set RH_DATA" % (CACHE, src))
+    _z = np.loadtxt(gzip.open(src, "rt"))
+    np.save(CACHE, _z[6413:7005])
 ZEROS = np.load(CACHE)
 assert ZEROS.ndim == 1 and ZEROS.size == 592, ZEROS.shape
 
