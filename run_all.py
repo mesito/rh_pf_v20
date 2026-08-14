@@ -3,7 +3,7 @@
 
   python3 run_all.py            # everything except the heaviest ensembles
   python3 run_all.py --fast     # fast certificates only
-  python3 run_all.py --all      # includes supplementary_tight_pairs/verify_all.py (needs data/)
+  python3 run_all.py            # full suite including part_IX (~45 min)
 
 Data root for tight_pairs is taken from $RH_DATA, default ./data.
 """
@@ -36,10 +36,10 @@ def main():
             r = subprocess.run([sys.executable, f], cwd=os.path.join(HERE, g))
             print(">> %s: %s (%.0fs)" % (f, "OK" if r.returncode==0 else "FAIL", time.time()-t0))
             if r.returncode: failed.append(g+"/"+f)
-    if "--all" in sys.argv:
-        print("\n>> supplementary_tight_pairs/verify_all.py (external ensembles)")
-        r = subprocess.run([sys.executable, "verify_all.py"], cwd=os.path.join(HERE, "supplementary_tight_pairs"))
-        if r.returncode: failed.append("supplementary_tight_pairs/verify_all.py")
+    if not fast:
+        print("\n>> part_IX/verify_all.py (T1-T22; needs data/)")
+        r = subprocess.run([sys.executable, "verify_all.py"], cwd=os.path.join(HERE, "part_IX"))
+        if r.returncode: failed.append("part_IX/verify_all.py")
     print("\n" + "="*72)
     print(("FAILURES: " + ", ".join(failed)) if failed else "ALL SCRIPTS COMPLETED")
     sys.exit(1 if failed else 0)

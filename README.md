@@ -1,14 +1,14 @@
 # Verification suite for *Off-line zeros of the Riemann ξ-function* (version 20)
 
-Reproducibility package for
+Code and data accompanying
 
 > M. Ismail, *Off-line zeros of the Riemann ξ-function: a constraint network,
 > an exactly solved four-body collision, an energy–budget divergence, a
 > lifetime–deficit dictionary with negative controls, and an explicit bound for
 > S(T) from validated inputs*, 10 August 2026. `Ismail_rh_pf_v20.tex` / `.pdf`.
 
-Every theorem whose statement contains an explicit constant, each of the 25
-numbered Numerical Observations, all 17 tables and all 3 figures of the paper
+Every theorem whose statement contains an explicit constant, each numbered
+Numerical Observation, all 32 tables and all 7 figures of the paper
 are recomputed here, independently of the text, with pass/fail criteria stated
 in the scripts.
 
@@ -23,26 +23,25 @@ python3 run_all.py --fast     # fast certificates only         (~6 min)
 python3 run_all.py --all      # adds the supplementary suite   (~3 min)
 ```
 
-To recompile the manuscript: `cd paper && pdflatex Ismail_rh_pf_v20.tex`,
-run twice for the table of contents. Everything LaTeX needs is inside `paper/`
-(the source and the `figs/` subdirectory); no file outside it is required.
+This archive contains code and data only. The manuscript source and its
+figures are distributed separately as `Ismail_rh_pf_v20_latex.zip`
+(`Ismail_rh_pf_v20.tex` plus `figs/`); compile it with `pdflatex` run twice.
 
 ## 2. Contents of the package
 
 | Path | Covers | Scripts |
 |---|---|---|
-| `paper/` | the manuscript source, its PDF, and `paper/figs/` (Figures 33.1, 34.1, 36.1) | — |
 | `parts_I_VI/` | Sections 4–32 | 24 |
 | `part_VII/` | Sections 33–40 | 6 |
 | `part_VIII/` | Sections 41–47 | 3 |
+| `part_IX/` | Sections 48–57 | 10 |
 | `data/` | certified zero ensembles (36 files, 51 MB) | — |
-| `supplementary_tight_pairs/` | a separate investigation; see §6 | 10 |
 | `SHA256SUMS.txt` | checksums for every file above | — |
 
 Each of `parts_I_VI/`, `part_VII/` and `part_VIII/` is self-contained: the
 required zero caches (`zeta_zeros.npy`, `zeros_cache.pkl`, `dh_online_true.pkl`,
-`_cache_*.npy`) ship with them. Only `supplementary_tight_pairs/` reads `data/`,
-through the environment variable `RH_DATA` (default `./data`).
+`_cache_*.npy`) ship with them. Only `part_IX/` reads `data/`, through the
+environment variable `RH_DATA` (default `./data`).
 
 ## 3. Sections 4–32 — `parts_I_VI/`
 
@@ -108,22 +107,33 @@ Aggregate: 87 checks, all passing (24 + 9 + 7 + 13 + 25 + 9).
 | 44–46 | Lemmas 44.1, 44.2 (validated boundary inputs; localization); Prop 45.1 (admissibility, including R ≤ 3/2 + η); the evaluation of Section 46 | `verify_validated_bound.py` |
 | 47 | comparisons against the published envelope | `verify_optimized_bound.py` |
 
-## 6. `supplementary_tight_pairs/`
+## 6. Sections 48–57 — `part_IX/`
 
-`verify_all.py` (test groups T1–T22, **124 checks, all passing**) and the
-pipeline producing its inputs: `parta_compute.py`, `parta_analyze.py`,
-`partb_eiv.py`, `gen_disp_table.py`, `smooth_cutoff_scan.py`, `scan_floors.py`,
-`compute_lx.py`, `analyze_moments.py`, `gue_mc.py`. These belong to a separate
-investigation of tight zero pairs at height 8.4·10⁹, distributed here because
-they share the Speiser detector of Section 10 and the depth read-out of Section
-37. **No claim of this paper depends on them.**
+`verify_all.py` runs test groups T1–T22 (**124 checks, all passing**) against
+`data/`; the remaining nine scripts are the pipeline that produced its inputs
+and are shipped for full provenance.
+
+| § | Verified objects | Table / Figure | Test groups |
+|---|---|---|---|
+| 49 | ensembles, error budget (Table 49.2: phase error 2.24·10⁻¹⁰) | 49.1, 49.2 | T1 (spacings, floors) |
+| 50 | Lemma D, Theorem A, Cors A.1–A.3 (Speiser–Lehmer identity; max deviation of r²(1+1/(8C_mid)) from 1) | 50.1 | T8–T10 |
+| 51 | Theorem B, Cor B.1 (displacement law; 15-row verification, corr 0.999967) | Fig. 51.1; Table 57.1 (App. IX.B) | T7, T8 (`gen_disp_table.py`) |
+| 52 | Empirical Law 1, Lemma B′.1, Theorems B′(a)/(b), Cor B′.2 (floor fits a, b, R²; fold analysis; g_app = √(g²−4h₀²)) | 52.1, 52.2; Fig. 52.1 | T6, T6X (`parta_compute.py`, `parta_analyze.py`, `partb_eiv.py`, `smooth_cutoff_scan.py`) |
+| 53 | mediation: partial correlations 0.027 vs 0.873; Euler deficit −3.13σ at X=10⁶ | 53.1, 53.2; Fig. 53.1 | T11–T13 (`compute_lx.py`, `scan_floors.py`, `analyze_moments.py`) |
+| 54 | far-field law 2.5·dens²; shield 1.354/1.360; GUE tails (Theorem E, C_GUE = 4π²/15) | 54.1–54.3; Fig. 54.1 | T2–T5, T14–T15 (`gue_mc.py`) |
+| 55 | Proposition 55.4 (median margin); novelty ledger | 55.1 | T22 (sweep 2736/2736) |
+| 56 | Lemma 56.1 (Δ₀ = 0.2387), Cor 56.1′, Cor 56.2 + Remark 56.2′, Lemmas 56.3, 56.4, 56.7, Theorems 56.5, 56.8, 56.9, Prop 56.6 | 56.1–56.3 | T16–T21 |
+| 57 | discussion; Open Problem 57.1; Appendices IX.A–IX.C | 57.1 | — |
+
+Conventions used throughout: tight pair s < 0.15; floor = max|Z| over the gap
+(33-point grid + parabolic refinement); L_X phases in 80-bit long double.
 
 ## 7. Data provenance
 
 `data/lmfdb_zeros_parsed.npy` — 772 719 certified ordinates on
 [8.436146·10⁹, 8.436377·10⁹] (Platt); `zeros1.gz`, `zeros6.gz` — Odlyzko's
-tables at heights 10⁰ and 10⁶; the remaining files are derived by the scripts of
-§6 and are shipped so that `verify_all.py` runs without recomputation.
+tables at heights 10⁰ and 10⁶; the remaining files are derived by the pipeline scripts of §6 and are shipped
+so that `verify_all.py` runs without recomputation.
 
 ## 8. Conditional inputs of the paper
 
@@ -131,6 +141,8 @@ tables at heights 10⁰ and 10⁶; the remaining files are derived by the script
 |---|---|---|
 | Principle 27.1 (Euler Realizability Bound) | arithmetic conjecture | Thm 27.3, Cor 27.4 |
 | Open Problem 36.5 | statistical (frequency of wide outer gaps) | the Λ-chain of Part II, via Prop 36.4 |
+| (EL1) empirical loading law (R² = 0.951) | measured; promotion to a proved mean-value statement developed in §56 | Theorem 56.9(b), Theorem D |
+| (ENV) envelope hypothesis | analytic (GHK-type extrapolation); the irreducible residual | Theorem 56.9(b,e), Theorem D |
 | A1, A2, (H-i), (H-ii) | per instance, configurationally checkable | Thm 38.2, Cor 38.3 |
 | H2.1, H2.2, episode comparison | per instance | Thm 34.2, Cor 34.3 |
 
