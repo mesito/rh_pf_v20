@@ -4,7 +4,7 @@ LMFDB 8.4e9 ensemble (offset from fixed seed), using a vectorized Z_rs2
 with accurate longdouble pi constants (validated vs mpmath dps=50 to ~5e-9).
 
 Writes checkpoint npz per chunk and a final npy:
-  " + os.environ.get("RH_DATA","../data") + "/moment_floors_half{h}.npy  columns: gap_idx, t_mid, g, floor
+  $RH_DATA/moment_floors_half{h}.npy  columns: gap_idx, t_mid, g, floor
 """
 import sys, os, time
 import os

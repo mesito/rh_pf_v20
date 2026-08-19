@@ -1,10 +1,10 @@
 # Part A — full-ensemble floor fits (all tight pairs)
 
-Data: `floors_all_8p4e9.npy` (2736 pairs, floor = max|Z_rs2| over the gap, paper convention of sec05 eq. floor-def, 33-pt grid + parabolic refine), `LX_all_8p4e9.npy` (L_X at 6 cutoffs, one cumsum pass over 664,579 primes), `floors_all_2M.npy` (6088 pairs, fp64 RS, max and min122 conventions), `LX_all_2M.npy`.
+Data: `floors_all_8p4e9.npy` (2736 pairs, floor = max|Z_rs2| over the gap, paper convention of the floor convention of Section 52 eq. floor-def, 33-pt grid + parabolic refine), `LX_all_8p4e9.npy` (L_X at 6 cutoffs, one cumsum pass over 664,579 primes), `floors_all_2M.npy` (6088 pairs, fp64 RS, max and min122 conventions), `LX_all_2M.npy`.
 
 Convention check: on the 300-pair subset, max-convention floors are ~29.4x the archived min-122-sample floors (constant factor, absorbed in c); refit at X=1e4 gives a=2.006/1.978, b=0.772/0.783, R2=0.9442/0.9447 — no material difference in a, b, R2 (all scale-invariant).
 
-## Table 5.1 (full): 8.4e9, 2736 pairs vs 300-pair values
+## Table 52.1 (full): 8.4e9, 2736 pairs vs 300-pair values
 
 | X | a (full) | se(a) | b (full) | se(b) | R2 (full) | a/b/R2 (300) | move? |
 |---|---|---|---|---|---|---|---|
@@ -15,7 +15,7 @@ Convention check: on the 300-pair subset, max-convention floors are ~29.4x the a
 | 1e6 | 1.9595 | 0.0128 | 0.8945 | 0.0058 | 0.9447 | 1.932/0.899/0.9439 | no |
 | 1e7 | 1.9372 | 0.0121 | 0.9271 | 0.0056 | 0.9510 | 1.868/0.944/0.9546 | **YES** |
 
-## Table 5.2(a) (full): 2M, 6088 pairs, X=1e4
+## Table 52.2(a) (full): 2M, 6088 pairs, X=1e4
 
 | convention | a | se(a) | b | se(b) | R2 | 300-pair a/b/R2 |
 |---|---|---|---|---|---|---|

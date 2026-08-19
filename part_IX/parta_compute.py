@@ -16,7 +16,7 @@ import time
 import gzip
 import numpy as np
 
-D = '" + os.environ.get("RH_DATA","../data") + "/'
+D = os.environ.get("RH_DATA", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")) + "/"
 TWO_PI_LD = np.longdouble(2 * np.pi)
 
 # ------------------------------------------------------------------ data

@@ -6,7 +6,7 @@ import numpy as np
 import mpmath as mp
 import time
 
-d = '" + os.environ.get("RH_DATA","../data") + "/'
+d = os.environ.get("RH_DATA", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")) + "/"
 zl = np.load(d + 'lmfdb_zeros_parsed.npy')
 zll = zl.astype(np.longdouble)
 floors = np.load(d + 'lehmer_floors_8p4e9.npy')
