@@ -117,7 +117,7 @@ Aggregate: 87 checks, all passing (24 + 9 + 7 + 13 + 25 + 9).
 
 ## 6. Sections 48–57 — `part_IX/`
 
-`verify_all.py` runs test groups T1–T22 (**124 checks, all passing**) against
+`verify_all.py` runs test groups T1–T22 (**127 checks, all passing**) against
 `data/`; the remaining nine scripts are the pipeline that produced its inputs
 and are shipped for full provenance.
 

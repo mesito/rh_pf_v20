@@ -42,7 +42,8 @@ default run, adding ~30 s; primes <= 1e7 sieved once in T6X and reused):
   T22 per-pair certificate margin (Corollary 56.2 + Proposition 55.4, from
       detector_sweep_8p4e9.csv): H=sqrt(2/far) column check, eligibility
       far<4/(eps(1-eps)) (equivalently Delta_*>0), margin Delta_*-Delta_0
-      positivity, Delta_*=6.94 at the median pair (Theorem 56.5's u=6.90),
+      positivity, Delta_*=6.94 at the reference pair g=1e-2 with the median far
+      (Theorem 56.5's u=6.90; true ensemble median Delta_*=4.46),
       max-far pair Delta_*=-1.25, and the headline B_*(H)/|P_X| arithmetic.
       NOTE (provenance): the Proposition 55.4 table rows pair min g=4.15e-3 with
       the ensemble MEAN far (27.98~28) and the representative g=1.0e-2 with
@@ -709,8 +710,8 @@ x16 = P7 ** -0.5
 d0_term = -np.log1p(-x16) - x16 - 0.5 * P7 ** -1 - (P7 ** -1.5) / 3.0
 d0_cum = np.cumsum(d0_term)
 D0 = float(d0_cum[-1])
-report("T16 Delta_0(1e7)", D0, 0.2386607627819003, 1e-12,
-       abs(D0 - 0.2386607627819003) <= 1e-12, cfmt="%.13f", tfmt="%.13f")
+report("T16 Delta_0(1e7)", D0, 0.2386607627819104, 1e-12,
+       abs(D0 - 0.2386607627819104) <= 1e-12, cfmt="%.13f", tfmt="%.13f")
 d0p2 = float(d0_term[0])
 report("T16 p=2 term", d0p2, 0.15298926591521006, 1e-15,
        abs(d0p2 - 0.15298926591521006) <= 1e-15, cfmt="%.15f", tfmt="%.15f")
@@ -783,6 +784,17 @@ TBIG = 8.436e9
 err18 = Sa18 ** 2 * 4 * 1e7 / TBIG ** 2
 report("T18 2nd-moment err (sum a_p)^2 4X/H", err18, 1.21e-7, 0.05,
        abs(err18 / 1.21e-7 - 1) <= 0.05, cfmt="%.4e", tfmt="%.2e")
+# Lemma 56.4 (v2): mixed-harmonic class (ii) 8 pi(X)^2/H, sum-frequency
+# class (iii) (sum a_p)^2/(H log 2), and the corrected total 1.71e-7.
+err18ii = 8.0 * len(P7) ** 2 / TBIG ** 2
+report("T18 class (ii) 8 pi(X)^2/H", err18ii, 4.96e-8, 0.05,
+       abs(err18ii / 4.96e-8 - 1) <= 0.05, cfmt="%.4e", tfmt="%.2e")
+err18iii = Sa18 ** 2 / (TBIG ** 2 * np.log(2.0))
+report("T18 class (iii) (sum a_p)^2/(H log2)", err18iii, 4.4e-15, 0.05,
+       abs(err18iii / 4.4e-15 - 1) <= 0.05, cfmt="%.4e", tfmt="%.2e")
+err18tot = err18 + err18ii + err18iii
+report("T18 total 2nd-moment error (Lemma 56.4)", err18tot, 1.71e-7, 0.05,
+       abs(err18tot / 1.71e-7 - 1) <= 0.05, cfmt="%.4e", tfmt="%.2e")
 mean18 = 2 * Sa18 / (TBIG ** 2 * np.log(2))
 report("T18 mean bound 2 sum a_p/(H log 2)", mean18, 1.9e-17, 0.05,
        abs(mean18 / 1.9e-17 - 1) <= 0.05, cfmt="%.4e", tfmt="%.1e")
@@ -968,18 +980,23 @@ mmin22, mmax22 = float(marg22.min()), float(marg22.max())
 report("T22 margin Delta_*-Delta_0 > 0 (min)", mmin22, ">0", "-",
        mmin22 > 0, cfmt="%.4f")
 report("T22 margin range all eligible [min,max]",
-       "%.4f/%.4f" % (mmin22, mmax22), "info (typ. 6.9-8.5)", "-", True)
-# preprint's "median pair" (Theorem 56.5: u=6.90 = Delta_* at the median pair):
-# representative g=1.0e-2 with the data median far
+       "%.4f/%.4f" % (mmin22, mmax22), "info (reference 6.9-8.5)", "-", True)
+# manuscript's "reference pair" (Table 56.2: u=6.90 = Delta_* at the reference
+# pair): representative g=1.0e-2 with the data median far. NOTE (v2): the true
+# ensemble median of Delta_* is 4.46 (median-gap pair g=0.0356), NOT 6.9;
+# the value 6.9 belongs to the reference pair g=1e-2 (top ~1% by tightness).
 fmed22 = float(np.median(far22))
 gmed22 = 1.0e-2
 emed22 = gmed22 / 2.0
 Dst_med22 = float(np.log(4.0 * (emed22 ** 2 + 4.0 / fmed22) ** 2 / gmed22 ** 2))
-report("T22 Delta_* at median pair", Dst_med22, 6.90, 0.1,
+report("T22 Delta_* at reference pair (g=1e-2)", Dst_med22, 6.90, 0.1,
        abs(Dst_med22 - 6.90) <= 0.1, cfmt="%.4f", tfmt="%.2f")
 mmed22 = Dst_med22 - D0
-report("T22 margin at median pair in [6.0,8.5]", mmed22, "6.9", "[6.0,8.5]",
+report("T22 margin at reference pair in [6.0,8.5]", mmed22, "6.9", "[6.0,8.5]",
        6.0 <= mmed22 <= 8.5, cfmt="%.4f")
+Dst_truemed22 = float(np.median(Dst22[elig22]))
+print("    info: true ensemble median Delta_* (eligible) = %.4f, margin %.4f"
+      % (Dst_truemed22, Dst_truemed22 - D0))
 imax22 = int(np.argmax(far22))
 report("T22 max-far pair Delta_*", float(Dst22[imax22]), -1.25, 0.3,
        abs(Dst22[imax22] + 1.25) <= 0.3, cfmt="%.4f", tfmt="%.2f")
@@ -994,7 +1011,7 @@ Bt22 = gt22 ** 2 / (4.0 * ((gt22 / 2) ** 2 + 4.0 / fmean22) ** 2)
 report("T22 B*/|P_X| tightest (min g, mean far)", Bt22, 2.1e-4, 0.15,
        abs(Bt22 / 2.1e-4 - 1) <= 0.15, cfmt="%.4e", tfmt="%.1e")
 Bm22 = gmed22 ** 2 / (4.0 * (emed22 ** 2 + 4.0 / fmed22) ** 2)
-report("T22 B*/|P_X| median (g=1e-2, median far)", Bm22, 9.6e-4, 0.15,
+report("T22 B*/|P_X| reference (g=1e-2, median far)", Bm22, 9.6e-4, 0.15,
        abs(Bm22 / 9.6e-4 - 1) <= 0.15, cfmt="%.4e", tfmt="%.1e")
 Bx22 = float(Bstar22[imax22])
 report("T22 B*/|P_X| max-far pair", Bx22, 3.5, 0.15,
